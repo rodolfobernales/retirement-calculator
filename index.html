@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Ahorros para la Jubilación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #4b5563; /* gray-600 */
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db; /* gray-300 */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1; /* indigo-500 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #d1d5db;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        .slider:hover {
+            opacity: 1;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #6366f1;
+            cursor: pointer;
+        }
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #6366f1;
+            cursor: pointer;
+        }
+        .result-value {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700;
+            color: #6366f1; /* indigo-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <header class="text-center mb-10 md:mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Planificador de Ahorros para la Jubilación</h1>
+            <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Estima cuánto necesitas ahorrar para alcanzar tus metas financieras para la jubilación.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            
+            <!-- Input Controls Card -->
+            <div class="lg:col-span-2">
+                <div class="card p-6 md:p-8 sticky top-8">
+                    <h2 class="text-2xl font-semibold mb-6">Tus Detalles</h2>
+                    
+                    <!-- Current Age -->
+                    <div class="input-group">
+                        <div class="flex justify-between items-center">
+                            <label for="currentAge" class="input-label">Edad Actual</label>
+                            <span id="currentAgeValue" class="font-semibold text-indigo-600">30</span>
+                        </div>
+                        <input type="range" id="currentAge" class="slider" min="18" max="70" value="30">
+                    </div>
+
+                    <!-- Years to Work -->
+                    <div class="input-group">
+                         <div class="flex justify-between items-center">
+                            <label for="yearsToWork" class="input-label">Años Hasta la Jubilación</label>
+                            <span id="yearsToWorkValue" class="font-semibold text-indigo-600">35</span>
+                        </div>
+                        <input type="range" id="yearsToWork" class="slider" min="1" max="60" value="35">
+                    </div>
+
+                    <!-- Interest Rate -->
+                    <div class="input-group">
+                        <div class="flex justify-between items-center">
+                            <label for="interestRate" class="input-label">Tasa de Interés Anual Estimada (%)</label>
+                            <span id="interestRateValue" class="font-semibold text-indigo-600">7.0</span>
+                        </div>
+                        <input type="range" id="interestRate" class="slider" min="1" max="15" step="0.1" value="7">
+                    </div>
+
+                    <!-- Retirement Goal -->
+                    <div class="input-group">
+                        <label for="retirementGoal" class="input-label">Meta de Jubilación (CLP)</label>
+                        <input type="number" id="retirementGoal" class="input-field" placeholder="ej: 500.000.000" value="500000000">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results and Chart Card -->
+            <div class="lg:col-span-3">
+                 <div class="card p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold mb-6">Tu Plan de Ahorro Estimado</h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 text-center">
+                        <div class="bg-indigo-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-medium text-gray-600 mb-2">Ahorro Mensual Requerido</h3>
+                            <p id="monthlySaving" class="result-value">$0</p>
+                        </div>
+                        <div class="bg-indigo-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-medium text-gray-600 mb-2">Ahorro Anual Requerido</h3>
+                            <p id="annualSaving" class="result-value">$0</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                         <h3 class="text-xl font-semibold mb-4 text-center">Crecimiento Proyectado</h3>
+                         <canvas id="savingsChart" height="250"></canvas>
+                    </div>
+
+                     <div class="mt-8 text-center bg-gray-100 p-4 rounded-lg">
+                        <p class="text-gray-700">Al jubilarte a los <span id="retirementAge" class="font-bold">65</span>, habrás contribuido <span id="totalContributions" class="font-bold">$0</span>, y ganado <span id="totalInterest" class="font-bold">$0</span> en intereses.</p>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const currentAgeInput = document.getElementById('currentAge');
+        const yearsToWorkInput = document.getElementById('yearsToWork');
+        const interestRateInput = document.getElementById('interestRate');
+        const retirementGoalInput = document.getElementById('retirementGoal');
+
+        const currentAgeValue = document.getElementById('currentAgeValue');
+        const yearsToWorkValue = document.getElementById('yearsToWorkValue');
+        const interestRateValue = document.getElementById('interestRateValue');
+
+        const monthlySavingEl = document.getElementById('monthlySaving');
+        const annualSavingEl = document.getElementById('annualSaving');
+        const retirementAgeEl = document.getElementById('retirementAge');
+        const totalContributionsEl = document.getElementById('totalContributions');
+        const totalInterestEl = document.getElementById('totalInterest');
+
+        // --- Chart.js Setup ---
+        const ctx = document.getElementById('savingsChart').getContext('2d');
+        let savingsChart;
+
+        function createChart(labels, principalData, interestData) {
+            if (savingsChart) {
+                savingsChart.destroy();
+            }
+            savingsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Contribuciones Totales',
+                        data: principalData,
+                        backgroundColor: '#818cf8', // indigo-400
+                        borderColor: '#6366f1',
+                        borderWidth: 1
+                    }, {
+                        label: 'Intereses Ganados',
+                        data: interestData,
+                        backgroundColor: '#c7d2fe', // indigo-200
+                        borderColor: '#a5b4fc',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Años'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Valor (CLP)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    // Format y-axis labels to show millions (M)
+                                    return 'CLP ' + Math.round(value / 1000000) + 'M';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        // Format tooltip with CLP currency format
+                                        label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Calculation Logic ---
+        function calculateAndDisplay() {
+            // Get values from inputs
+            const age = parseInt(currentAgeInput.value);
+            const years = parseInt(yearsToWorkInput.value);
+            const rate = parseFloat(interestRateInput.value) / 100;
+            const futureValue = parseFloat(retirementGoalInput.value) || 0;
+
+            // Update display values next to sliders
+            currentAgeValue.textContent = age;
+            yearsToWorkValue.textContent = years;
+            interestRateValue.textContent = interestRateInput.value;
+
+            // Core Calculation: PMT = FV * r / ((1+r)^n - 1)
+            let annualContribution = 0;
+            if (rate > 0) {
+                 annualContribution = (futureValue * rate) / (Math.pow(1 + rate, years) - 1);
+            } else if (years > 0) { // Handle case where interest rate is 0
+                 annualContribution = futureValue / years;
+            }
+           
+            const monthlyContribution = annualContribution / 12;
+
+            // Display results using CLP formatting
+            const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            
+            monthlySavingEl.textContent = formatter.format(monthlyContribution);
+            annualSavingEl.textContent = formatter.format(annualContribution);
+            
+            // Calculate and display summary text
+            const finalRetirementAge = age + years;
+            const totalPrincipal = annualContribution * years;
+            const totalInterest = futureValue - totalPrincipal;
+
+            retirementAgeEl.textContent = finalRetirementAge;
+            totalContributionsEl.textContent = formatter.format(totalPrincipal);
+            totalInterestEl.textContent = formatter.format(totalInterest);
+
+            // --- Update Chart Data ---
+            const chartLabels = [];
+            const principalData = [];
+            const interestData = [];
+
+            for (let i = 1; i <= years; i++) {
+                 // Add labels for every 5 years, plus the first and last year for clarity
+                if (i === 1 || i === years || i % 5 === 0) { 
+                    chartLabels.push(`Año ${i}`);
+                    
+                    // Recalculate balance for the specific year 'i'
+                    let yearBalance = 0;
+                     for (let j = 0; j < i; j++) {
+                        yearBalance = (yearBalance + annualContribution) * (1 + rate);
+                    }
+
+                    const yearPrincipal = annualContribution * i;
+                    const yearInterest = yearBalance - yearPrincipal;
+
+                    principalData.push(yearPrincipal);
+                    interestData.push(yearInterest);
+                }
+            }
+
+            createChart(chartLabels, principalData, interestData);
+        }
+
+        // --- Event Listeners ---
+        [currentAgeInput, yearsToWorkInput, interestRateInput, retirementGoalInput].forEach(input => {
+            input.addEventListener('input', calculateAndDisplay);
+        });
+
+        // --- Initial Calculation on Load ---
+        window.onload = calculateAndDisplay;
+    </script>
+</body>
+</html>
