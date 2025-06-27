@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Ahorros para la Jubilación</title>
+    <title>Planificador Financiero</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex-grow: 1;
         }
         .card {
             background-color: white;
@@ -17,281 +23,364 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             transition: all 0.3s ease;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-        .input-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #4b5563; /* gray-600 */
-        }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #4b5563; }
         .input-field {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid #d1d5db; /* gray-300 */
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #d1d5db;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .input-field:focus {
-            outline: none;
-            border-color: #6366f1; /* indigo-500 */
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+            outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
         }
         .slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #d1d5db;
-            outline: none;
-            opacity: 0.7;
-            transition: opacity .2s;
+            -webkit-appearance: none; width: 100%; height: 8px; border-radius: 5px; background: #d1d5db;
+            outline: none; opacity: 0.7; transition: opacity .2s;
         }
-        .slider:hover {
-            opacity: 1;
-        }
+        .slider:hover { opacity: 1; }
         .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #6366f1;
-            cursor: pointer;
+            -webkit-appearance: none; appearance: none; width: 20px; height: 20px;
+            border-radius: 50%; background: #6366f1; cursor: pointer;
         }
         .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #6366f1;
-            cursor: pointer;
+            width: 20px; height: 20px; border-radius: 50%; background: #6366f1; cursor: pointer;
         }
-        .result-value {
-            font-size: 2.25rem; /* text-4xl */
-            font-weight: 700;
-            color: #6366f1; /* indigo-500 */
+        .result-value { font-size: 2.25rem; font-weight: 700; color: #6366f1; }
+        .tab-button {
+            padding: 0.5rem 1rem; border-radius: 9999px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease;
         }
+        .tab-button.active { background-color: #4f46e5; color: white; }
+        .tab-button.inactive { background-color: #e0e7ff; color: #4338ca; }
+        .currency-button {
+            padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 500; font-size: 0.875rem;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .currency-button.active { background-color: #10b981; color: white; }
+        .currency-button.inactive { background-color: #d1fae5; color: #047857; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <div class="container mx-auto px-4 py-8 md:py-12">
+    <main class="container mx-auto px-4 py-8 md:py-12">
         <header class="text-center mb-10 md:mb-16">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Planificador de Ahorros para la Jubilación</h1>
-            <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Estima cuánto necesitas ahorrar para financiar tu pensión mensual deseada.</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Planificador Financiero</h1>
+            <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Calcula tu plan de jubilación o define una meta de ahorro.</p>
+            
+            <div class="mt-6 flex justify-center space-x-2 bg-indigo-100 p-1 rounded-full w-max mx-auto">
+                <button id="retirement-tab" class="tab-button active">Plan de Jubilación</button>
+                <button id="savings-tab" class="tab-button inactive">Meta de Ahorro</button>
+            </div>
+            
+            <div id="currency-selector" class="mt-4 flex justify-center space-x-2 bg-green-100 p-1 rounded-full w-max mx-auto">
+                <button id="clp-btn" data-currency="CLP" class="currency-button active">CLP 🇨🇱</button>
+                <button id="usd-btn" data-currency="USD" class="currency-button inactive">USD 🇺🇸</button>
+                <button id="mxn-btn" data-currency="MXN" class="currency-button inactive">MXN 🇲🇽</button>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            
-            <!-- Input Controls Card -->
-            <div class="lg:col-span-2">
-                <div class="card p-6 md:p-8 sticky top-8">
-                    <h2 class="text-2xl font-semibold mb-6">Tus Detalles</h2>
-                    
-                    <div class="input-group">
-                        <div class="flex justify-between items-center">
-                            <label for="currentAge" class="input-label">Edad Actual</label>
-                            <span id="currentAgeValue" class="font-semibold text-indigo-600">30</span>
+        <div id="content-area">
+            <div id="retirement-calculator">
+                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-2">
+                        <div class="card p-6 md:p-8 sticky top-8">
+                            <h2 class="text-2xl font-semibold mb-6">Tus Detalles de Jubilación</h2>
+                            <div class="input-group">
+                                <div class="flex justify-between items-center">
+                                    <label for="currentAge" class="input-label">Edad Actual</label>
+                                    <span id="currentAgeValue" class="font-semibold text-indigo-600">30</span>
+                                </div>
+                                <input type="range" id="currentAge" class="slider" min="18" max="70" value="30">
+                            </div>
+                            <div class="input-group">
+                                <div class="flex justify-between items-center">
+                                    <label for="retirementAge" class="input-label">Edad de Jubilación</label>
+                                    <span id="retirementAgeValue" class="font-semibold text-indigo-600">65</span>
+                                </div>
+                                <input type="range" id="retirementAge" class="slider" min="50" max="84" value="65">
+                            </div>
+                            <div class="input-group">
+                                <div class="flex justify-between items-center">
+                                    <label for="interestRate" class="input-label">Tasa de Interés Anual (%)</label>
+                                    <span id="interestRateValue" class="font-semibold text-indigo-600">10.0</span>
+                                </div>
+                                <input type="range" id="interestRate" class="slider" min="1" max="15" step="0.1" value="10">
+                            </div>
+                            <div class="input-group">
+                                <div class="flex justify-between items-center">
+                                    <label for="inflationRate" class="input-label">Inflación Anual (%)</label>
+                                    <span id="inflationRateValue" class="font-semibold text-indigo-600">4.0</span>
+                                </div>
+                                <input type="range" id="inflationRate" class="slider" min="0" max="10" step="0.1" value="4">
+                            </div>
+                            <div class="input-group">
+                                <label for="initialSavings" class="input-label">Ahorro Inicial (<span class="currency-label">CLP</span>)</label>
+                                <input type="text" id="initialSavings" inputmode="numeric" class="input-field" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="monthlyPensionInput" class="input-label">Pensión Mensual Deseada (<span class="currency-label">CLP</span> de hoy)</label>
+                                <input type="text" id="monthlyPensionInput" inputmode="numeric" class="input-field" value="1.000.000">
+                                <p id="pensionFutureValueNote" class="text-xs text-gray-500 mt-2 text-left h-4"></p>
+                            </div>
+                            <p id="retirement-error-message" class="text-red-500 text-sm h-4"></p>
                         </div>
-                        <input type="range" id="currentAge" class="slider" min="18" max="70" value="30">
                     </div>
-
-                    <div class="input-group">
-                         <div class="flex justify-between items-center">
-                            <label for="retirementAge" class="input-label">Edad de Jubilación</label>
-                            <span id="retirementAgeValue" class="font-semibold text-indigo-600">65</span>
+                    <div class="lg:col-span-3">
+                        <div class="card p-6 md:p-8">
+                            <h2 class="text-2xl font-semibold mb-6">Tu Plan de Ahorro Estimado</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 text-center">
+                                <div class="bg-indigo-50 p-6 rounded-lg">
+                                    <h3 class="text-lg font-medium text-gray-600 mb-2">Ahorro Mensual Requerido</h3>
+                                    <p id="monthlySaving" class="result-value">$0</p>
+                                </div>
+                                <div class="bg-indigo-50 p-6 rounded-lg">
+                                    <h3 class="text-lg font-medium text-gray-600 mb-2">Ahorro Anual Requerido</h3>
+                                    <p id="annualSaving" class="result-value">$0</p>
+                                </div>
+                            </div>
+                            <div class="mt-8">
+                                <h3 class="text-xl font-semibold mb-4 text-center">Crecimiento Proyectado</h3>
+                                <div class="relative h-80 md:h-96">
+                                    <canvas id="retirementChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="mt-8 text-center bg-gray-100 p-4 rounded-lg">
+                                <p class="text-gray-700">Para financiar tu pensión hasta los <span class="font-bold">85 años</span>, necesitas acumular un fondo total de <span id="totalFund" class="font-bold">$0</span>.</p>
+                                <p class="text-gray-700 mt-2">De ese fondo, <span id="totalContributions" class="font-bold">$0</span> serán tus contribuciones y <span id="totalInterest" class="font-bold">$0</span> serán intereses ganados.</p>
+                            </div>
                         </div>
-                        <input type="range" id="retirementAge" class="slider" min="50" max="84" value="65">
                     </div>
-
-                    <div class="input-group">
-                        <div class="flex justify-between items-center">
-                            <label for="interestRate" class="input-label">Tasa de Interés Anual Estimada (%)</label>
-                            <span id="interestRateValue" class="font-semibold text-indigo-600">10.0</span>
-                        </div>
-                        <input type="range" id="interestRate" class="slider" min="1" max="15" step="0.1" value="10">
-                    </div>
-
-                    <div class="input-group">
-                        <div class="flex justify-between items-center">
-                            <label for="inflationRate" class="input-label">Inflación Anual Estimada (%)</label>
-                            <span id="inflationRateValue" class="font-semibold text-indigo-600">4.0</span>
-                        </div>
-                        <input type="range" id="inflationRate" class="slider" min="0" max="10" step="0.1" value="4">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="initialSavings" class="input-label">Ahorro Inicial (CLP)</label>
-                        <input type="text" id="initialSavings" inputmode="numeric" class="input-field" placeholder="ej: 5.000.000" value="0">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="monthlyPensionInput" class="input-label">Pensión Mensual Deseada (en dinero de hoy)</label>
-                        <input type="text" id="monthlyPensionInput" inputmode="numeric" class="input-field" placeholder="ej: 1.000.000" value="1.000.000">
-                        <p id="pensionFutureValueNote" class="text-xs text-gray-500 mt-2 text-left h-4"></p>
-                    </div>
-                    
-                    <p id="error-message" class="text-red-500 text-sm h-4"></p>
                 </div>
             </div>
-
-            <!-- Results and Chart Card -->
-            <div class="lg:col-span-3">
-                 <div class="card p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold mb-6">Tu Plan de Ahorro Estimado</h2>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 text-center">
-                        <div class="bg-indigo-50 p-6 rounded-lg">
-                            <h3 class="text-lg font-medium text-gray-600 mb-2">Ahorro Mensual Requerido</h3>
-                            <p id="monthlySaving" class="result-value">$0</p>
-                        </div>
-                        <div class="bg-indigo-50 p-6 rounded-lg">
-                            <h3 class="text-lg font-medium text-gray-600 mb-2">Ahorro Anual Requerido</h3>
-                            <p id="annualSaving" class="result-value">$0</p>
+            <div id="savings-calculator" class="hidden">
+                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-2">
+                        <div class="card p-6 md:p-8 sticky top-8">
+                            <h2 class="text-2xl font-semibold mb-6">Tu Meta de Ahorro</h2>
+                            <div class="input-group">
+                                <label for="goalName" class="input-label">Nombre de tu meta</label>
+                                <input type="text" id="goalName" class="input-field" placeholder="Ej: Pie para un auto">
+                            </div>
+                            <div class="input-group">
+                                <label for="goalAmount" class="input-label">Monto de la Meta (<span class="currency-label-goal">CLP</span>)</label>
+                                <input type="text" id="goalAmount" inputmode="numeric" class="input-field" placeholder="Ej: 5.000.000">
+                            </div>
+                             <div class="input-group">
+                                <div class="flex justify-between items-center">
+                                    <label for="goalInterestRate" class="input-label">Tasa de Interés Anual (%)</label>
+                                    <span id="goalInterestRateValue" class="font-semibold text-indigo-600">5.0</span>
+                                </div>
+                                <input type="range" id="goalInterestRate" class="slider" min="0" max="15" step="0.1" value="5">
+                            </div>
+                            <div class="input-group">
+                                <div class="flex justify-between items-center">
+                                    <label for="goalYears" class="input-label">¿En cuántos años?</label>
+                                    <span id="goalYearsValue" class="font-semibold text-indigo-600">2</span>
+                                </div>
+                                <input type="range" id="goalYears" class="slider" min="1" max="20" value="2">
+                            </div>
+                             <p id="savings-error-message" class="text-red-500 text-sm h-4"></p>
                         </div>
                     </div>
-
-                    <div class="mt-8">
-                         <h3 class="text-xl font-semibold mb-4 text-center">Crecimiento Proyectado</h3>
-                         <div class="relative h-80 md:h-96">
-                            <canvas id="savingsChart"></canvas>
-                         </div>
+                    <div class="lg:col-span-3">
+                         <div class="card p-6 md:p-8 text-center">
+                            <h2 id="savings-result-title" class="text-2xl font-semibold mb-6">Tu Plan de Ahorro</h2>
+                             <div class="bg-indigo-50 p-8 rounded-lg">
+                                <h3 class="text-xl font-medium text-gray-600 mb-2">Ahorro Mensual Necesario</h3>
+                                <p id="monthlySavingsGoal" class="text-5xl font-bold text-indigo-600">$0</p>
+                            </div>
+                             <div class="mt-8">
+                                <h3 class="text-xl font-semibold mb-4 text-center">Progreso de Ahorro</h3>
+                                <div class="relative h-80 md:h-96">
+                                    <canvas id="savingsChart"></canvas>
+                                </div>
+                            </div>
+                             <div class="mt-8 text-center bg-gray-100 p-4 rounded-lg">
+                                <p class="text-gray-700">Al final del plazo, habrás aportado <span id="savingsTotalContributions" class="font-bold">$0</span> y ganado <span id="savingsTotalInterest" class="font-bold">$0</span> en intereses, para alcanzar tu meta de <span id="savingsGoalTotal" class="font-bold">$0</span>.</p>
+                            </div>
+                        </div>
                     </div>
-
-                     <div class="mt-8 text-center bg-gray-100 p-4 rounded-lg">
-                        <p class="text-gray-700">Para financiar tu pensión hasta los <span class="font-bold">85 años</span>, necesitas acumular un fondo total de <span id="totalFund" class="font-bold">$0</span>.</p>
-                        <p class="text-gray-700 mt-2">De ese fondo, <span id="totalContributions" class="font-bold">$0</span> serán tus contribuciones y <span id="totalInterest" class="font-bold">$0</span> serán intereses ganados.</p>
-                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+
+    <footer class="w-full py-6">
+        <div class="container mx-auto text-center text-gray-600">
+            <p>Desarrollado por 
+                <a href="https://www.linkedin.com/in/rodolfobernales/" target="_blank" rel="noopener noreferrer" class="font-semibold text-indigo-600 hover:underline">
+                    Rolox
+                </a>
+            </p>
+        </div>
+    </footer>
 
     <script>
+        // --- Constants and Global Vars ---
+        const LIFE_EXPECTANCY = 85;
+        let retirementChart, savingsChart;
+        let currentCurrency = 'CLP';
+        const currencySettings = {
+            CLP: { locale: 'es-CL', defaultPension: '1000000', defaultInitial: '0', defaultGoal: '5000000' },
+            USD: { locale: 'en-US', defaultPension: '4000', defaultInitial: '0', defaultGoal: '20000' },
+            MXN: { locale: 'es-MX', defaultPension: '50000', defaultInitial: '0', defaultGoal: '300000' }
+        };
+
+        // --- DOM Elements ---
+        const retirementTab = document.getElementById('retirement-tab');
+        const savingsTab = document.getElementById('savings-tab');
+        const retirementCalculatorDiv = document.getElementById('retirement-calculator');
+        const savingsCalculatorDiv = document.getElementById('savings-calculator');
+        const currencySelectorDiv = document.getElementById('currency-selector');
+        
+        // Retirement Elements
         const currentAgeInput = document.getElementById('currentAge');
         const retirementAgeInput = document.getElementById('retirementAge');
         const interestRateInput = document.getElementById('interestRate');
         const inflationRateInput = document.getElementById('inflationRate');
         const initialSavingsInput = document.getElementById('initialSavings');
         const monthlyPensionInput = document.getElementById('monthlyPensionInput');
-
         const currentAgeValue = document.getElementById('currentAgeValue');
         const retirementAgeValue = document.getElementById('retirementAgeValue');
         const interestRateValue = document.getElementById('interestRateValue');
         const inflationRateValue = document.getElementById('inflationRateValue');
         const pensionFutureValueNoteEl = document.getElementById('pensionFutureValueNote');
-        
         const monthlySavingEl = document.getElementById('monthlySaving');
         const annualSavingEl = document.getElementById('annualSaving');
         const totalFundEl = document.getElementById('totalFund');
         const totalContributionsEl = document.getElementById('totalContributions');
         const totalInterestEl = document.getElementById('totalInterest');
-        const errorMessageEl = document.getElementById('error-message');
+        const retirementErrorMessageEl = document.getElementById('retirement-error-message');
+        const retirementChartCtx = document.getElementById('retirementChart')?.getContext('2d');
 
-        const ctx = document.getElementById('savingsChart')?.getContext('2d');
-        let savingsChart;
-        const LIFE_EXPECTANCY = 85;
+        // Savings Goal Elements
+        const goalNameInput = document.getElementById('goalName');
+        const goalAmountInput = document.getElementById('goalAmount');
+        const goalYearsInput = document.getElementById('goalYears');
+        const goalInterestRateInput = document.getElementById('goalInterestRate');
+        const goalInterestRateValue = document.getElementById('goalInterestRateValue');
+        const goalYearsValue = document.getElementById('goalYearsValue');
+        const monthlySavingsGoalEl = document.getElementById('monthlySavingsGoal');
+        const savingsResultTitleEl = document.getElementById('savings-result-title');
+        const savingsErrorMessageEl = document.getElementById('savings-error-message');
+        const savingsChartCtx = document.getElementById('savingsChart')?.getContext('2d');
+        const savingsTotalContributionsEl = document.getElementById('savingsTotalContributions');
+        const savingsTotalInterestEl = document.getElementById('savingsTotalInterest');
+        const savingsGoalTotalEl = document.getElementById('savingsGoalTotal');
 
+
+        // --- Helper Functions ---
         function formatNumber(input) {
+            const settings = currencySettings[currentCurrency];
             let value = input.value.replace(/[^0-9]/g, '');
-            input.value = value ? new Intl.NumberFormat('es-CL').format(value) : '';
+            input.value = value ? new Intl.NumberFormat(settings.locale).format(value) : '';
         }
 
-        function clearResults() {
-            const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-            monthlySavingEl.textContent = formatter.format(0);
-            annualSavingEl.textContent = formatter.format(0);
-            totalFundEl.textContent = formatter.format(0);
-            totalContributionsEl.textContent = formatter.format(0);
-            totalInterestEl.textContent = formatter.format(0);
-            pensionFutureValueNoteEl.textContent = '';
-            if(savingsChart) savingsChart.destroy();
-        }
-        
-        function createChart(labels, principalData, interestData) {
-            if (savingsChart) savingsChart.destroy();
-            savingsChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Contribuciones Totales', data: principalData, backgroundColor: '#818cf8'
-                    }, {
-                        label: 'Intereses Ganados', data: interestData, backgroundColor: '#c7d2fe'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { stacked: true, title: { display: true, text: 'Años' } },
-                        y: { stacked: true, title: { display: true, text: 'Valor (CLP)' }, ticks: { callback: value => 'CLP ' + Math.round(value / 1000000) + 'M' } }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: context => `${context.dataset.label || ''}: ${new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed.y)}`
-                            }
-                        }
+        // --- Event Listeners ---
+        function setupEventListeners() {
+            retirementTab.addEventListener('click', () => switchTab('retirement'));
+            savingsTab.addEventListener('click', () => switchTab('savings'));
+            
+            currencySelectorDiv.addEventListener('click', (e) => {
+                if(e.target.matches('.currency-button')) {
+                    const newCurrency = e.target.dataset.currency;
+                    if(newCurrency !== currentCurrency) {
+                        updateCurrency(newCurrency);
                     }
                 }
             });
+
+            [currentAgeInput, retirementAgeInput, interestRateInput, inflationRateInput].forEach(input => input.addEventListener('input', calculateRetirement));
+            [initialSavingsInput, monthlyPensionInput].forEach(input => {
+                input.addEventListener('input', () => { formatNumber(input); calculateRetirement(); });
+            });
+
+            [goalNameInput, goalAmountInput, goalYearsInput, goalInterestRateInput].forEach(input => {
+                 input.addEventListener('input', () => {
+                     if(input.id === 'goalAmount') formatNumber(input);
+                     calculateSavingsGoal();
+                 });
+            });
+        }
+        
+        // --- View Switching ---
+        function switchTab(tab) {
+            const isRetirement = tab === 'retirement';
+            retirementTab.classList.toggle('active', isRetirement);
+            retirementTab.classList.toggle('inactive', !isRetirement);
+            savingsTab.classList.toggle('active', !isRetirement);
+            savingsTab.classList.toggle('inactive', isRetirement);
+            retirementCalculatorDiv.classList.toggle('hidden', !isRetirement);
+            savingsCalculatorDiv.classList.toggle('hidden', isRetirement);
+            
+            if(isRetirement) calculateRetirement();
+            else calculateSavingsGoal();
+        }
+        
+        // --- Currency Handling ---
+        function updateCurrency(newCurrency) {
+            currentCurrency = newCurrency;
+            const settings = currencySettings[currentCurrency];
+            
+            document.querySelectorAll('.currency-button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.currency === newCurrency);
+                btn.classList.toggle('inactive', btn.dataset.currency !== newCurrency);
+            });
+            
+            document.querySelectorAll('.currency-label, .currency-label-goal').forEach(label => label.textContent = currentCurrency);
+            
+            initialSavingsInput.value = settings.defaultInitial;
+            monthlyPensionInput.value = settings.defaultPension;
+            goalAmountInput.value = settings.defaultGoal;
+            
+            formatNumber(initialSavingsInput);
+            formatNumber(monthlyPensionInput);
+            formatNumber(goalAmountInput);
+            
+            calculateRetirement();
+            calculateSavingsGoal();
         }
 
-        function calculateAndDisplay() {
-            errorMessageEl.textContent = '';
-            
+        // --- RETIREMENT CALCULATOR ---
+        function calculateRetirement() {
+            retirementErrorMessageEl.textContent = '';
+            const settings = currencySettings[currentCurrency];
+
             const age = parseInt(currentAgeInput.value);
             const retirementAge = parseInt(retirementAgeInput.value);
             const interest = parseFloat(interestRateInput.value) / 100;
             const inflation = parseFloat(inflationRateInput.value) / 100;
-            const initialSavings = parseFloat(initialSavingsInput.value.replace(/\./g, '')) || 0;
-            const monthlyPensionPresentValue = parseFloat(monthlyPensionInput.value.replace(/\./g, '')) || 0;
+            const initialSavings = parseFloat(initialSavingsInput.value.replace(/[^0-9]/g, '')) || 0;
+            const monthlyPensionPresentValue = parseFloat(monthlyPensionInput.value.replace(/[^0-9]/g, '')) || 0;
 
             currentAgeValue.textContent = age;
             retirementAgeValue.textContent = retirementAge;
             interestRateValue.textContent = interestRateInput.value;
             inflationRateValue.textContent = inflationRateInput.value;
 
-            if (retirementAge <= age) {
-                errorMessageEl.textContent = 'La edad de jubilación debe ser mayor a la edad actual.';
-                clearResults();
-                return;
-            }
-             if (retirementAge >= LIFE_EXPECTANCY) {
-                errorMessageEl.textContent = 'La jubilación debe ser antes de la esperanza de vida (85).';
-                clearResults();
+            if (retirementAge <= age || retirementAge >= LIFE_EXPECTANCY) {
+                retirementErrorMessageEl.textContent = 'La edad de jubilación debe ser mayor a la actual y menor a 85.';
+                if(retirementChart) retirementChart.destroy();
                 return;
             }
 
             const yearsToSave = retirementAge - age;
             const realAnnualRate = interest - inflation;
-            
-            // 0. Calculate the future value of the desired monthly pension
             const monthlyPensionFutureValue = monthlyPensionPresentValue * Math.pow(1 + inflation, yearsToSave);
-
-            // 1. Calculate the total fund needed at retirement (Present Value of pension annuity)
+            
             const pensionYears = LIFE_EXPECTANCY - retirementAge;
             const pensionMonths = pensionYears * 12;
             const monthlyRealRate = realAnnualRate / 12;
 
             let totalFundNeeded = 0;
             if (monthlyRealRate !== 0) {
-                totalFundNeeded = monthlyPensionFutureValue * ( (1 - Math.pow(1 + monthlyRealRate, -pensionMonths)) / monthlyRealRate );
+                totalFundNeeded = monthlyPensionFutureValue * ((1 - Math.pow(1 + monthlyRealRate, -pensionMonths)) / monthlyRealRate);
             } else {
                 totalFundNeeded = monthlyPensionFutureValue * pensionMonths;
             }
 
-            // 2. Account for initial savings
             const futureValueOfInitialSavings = initialSavings * Math.pow(1 + realAnnualRate, yearsToSave);
             const targetFundFromContributions = totalFundNeeded - futureValueOfInitialSavings;
             
-            // 3. Calculate the annual contribution needed to reach the remaining fund
             let annualContribution = 0;
             if (targetFundFromContributions > 0) {
                 if (realAnnualRate !== 0) {
@@ -302,62 +391,145 @@
             }
            
             const monthlyContribution = annualContribution / 12;
-            const totalPrincipal = initialSavings + (annualContribution * yearsToSave);
-            const totalInterest = totalFundNeeded - totalPrincipal;
-
-            // 4. Display results
-            const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            const formatter = new Intl.NumberFormat(settings.locale, { style: 'currency', currency: currentCurrency, minimumFractionDigits: 0, maximumFractionDigits: 0 });
             
             monthlySavingEl.textContent = formatter.format(monthlyContribution);
             annualSavingEl.textContent = formatter.format(annualContribution);
             totalFundEl.textContent = formatter.format(totalFundNeeded);
             totalContributionsEl.textContent = formatter.format(initialSavings + (annualContribution * yearsToSave));
             totalInterestEl.textContent = formatter.format(totalFundNeeded - (initialSavings + annualContribution * yearsToSave));
-            pensionFutureValueNoteEl.textContent = `Será equivalente a ${formatter.format(monthlyPensionFutureValue)} al momento de jubilarte.`
+            pensionFutureValueNoteEl.textContent = `Será equivalente a ${formatter.format(monthlyPensionFutureValue)} al momento de jubilarte.`;
             
-            // 5. Update Chart
-            const chartLabels = [];
-            const principalData = [];
-            const interestData = [];
-            let accumulatedBalance = initialSavings;
+            updateRetirementChart(yearsToSave, initialSavings, annualContribution, realAnnualRate, settings);
+        }
 
-            for (let i = 1; i <= yearsToSave; i++) {
-                if (i === 1 || i === yearsToSave || i % 5 === 0 || yearsToSave < 5) { 
-                    chartLabels.push(`Año ${i}`);
-                    
-                    let yearBalance = initialSavings * Math.pow(1 + realAnnualRate, i);
-                    if (realAnnualRate !== 0) {
-                        yearBalance += annualContribution * ((Math.pow(1 + realAnnualRate, i) - 1) / realAnnualRate);
-                    } else {
-                        yearBalance += annualContribution * i;
-                    }
-                    
-                    const yearPrincipal = initialSavings + (annualContribution * i);
-                    const yearInterest = yearBalance - yearPrincipal;
+        function updateRetirementChart(years, initial, annual, rate, settings) {
+            if (retirementChart) retirementChart.destroy();
+            const labels = []; const principalData = []; const interestData = [];
+            const totalMonths = years * 12;
+            const monthlyRate = rate / 12;
+            const monthlyContribution = annual / 12;
+            let balance = initial;
+            
+            for (let m = 1; m <= totalMonths; m++) {
+                balance = balance * (1 + monthlyRate) + monthlyContribution;
+                if (m % 12 === 0 || m === totalMonths) { 
+                    const year = Math.ceil(m / 12);
+                    labels.push(`Año ${year}`);
+                    const yearPrincipal = initial + (monthlyContribution * m);
+                    const yearInterest = balance - yearPrincipal;
                     principalData.push(yearPrincipal);
                     interestData.push(yearInterest);
                 }
             }
-            createChart(chartLabels, principalData, interestData);
+            
+            retirementChart = new Chart(retirementChartCtx, {
+                type: 'bar',
+                data: { labels, datasets: [{ label: 'Aportes Totales', data: principalData, backgroundColor: '#818cf8' }, { label: 'Intereses Ganados', data: interestData, backgroundColor: '#c7d2fe' }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: `Valor (${currentCurrency})` } } },
+                    plugins: { tooltip: { callbacks: { label: context => `${context.dataset.label || ''}: ${new Intl.NumberFormat(settings.locale, { style: 'currency', currency: currentCurrency, maximumFractionDigits:0 }).format(context.parsed.y)}` } } }
+                }
+            });
         }
 
-        const inputsToTrack = [currentAgeInput, retirementAgeInput, interestRateInput, inflationRateInput];
-        inputsToTrack.forEach(input => input.addEventListener('input', calculateAndDisplay));
-        
-        [initialSavingsInput, monthlyPensionInput].forEach(input => {
-            input.addEventListener('input', () => {
-                formatNumber(input);
-                calculateAndDisplay();
-            });
-        });
+        // --- SAVINGS GOAL CALCULATOR ---
+        function calculateSavingsGoal() {
+            savingsErrorMessageEl.textContent = '';
+            const settings = currencySettings[currentCurrency];
+            
+            const goalName = goalNameInput.value || "Tu meta";
+            const goalAmount = parseFloat(goalAmountInput.value.replace(/[^0-9]/g, '')) || 0;
+            const years = parseInt(goalYearsInput.value);
+            const annualInterestRate = parseFloat(goalInterestRateInput.value) / 100;
 
+            goalYearsValue.textContent = years;
+            goalInterestRateValue.textContent = goalInterestRateInput.value;
+            savingsResultTitleEl.textContent = `Plan para "${goalName}"`;
+            
+            if (goalAmount <= 0) {
+                savingsErrorMessageEl.textContent = 'Ingresa un monto válido para tu meta.';
+                 if(savingsChart) savingsChart.destroy();
+                return;
+            }
+
+            const totalMonths = years * 12;
+            const monthlyRate = annualInterestRate / 12;
+            let monthlySavings = 0;
+
+            if (monthlyRate > 0) {
+                // PMT formula: PMT = FV * (r / ((1+r)^n - 1))
+                monthlySavings = goalAmount * (monthlyRate / (Math.pow(1 + monthlyRate, totalMonths) - 1));
+            } else {
+                monthlySavings = goalAmount / totalMonths;
+            }
+
+            const formatter = new Intl.NumberFormat(settings.locale, { style: 'currency', currency: currentCurrency, minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            monthlySavingsGoalEl.textContent = formatter.format(monthlySavings);
+            
+            const totalContributions = monthlySavings * totalMonths;
+            const totalInterest = goalAmount - totalContributions;
+
+            savingsTotalContributionsEl.textContent = formatter.format(totalContributions);
+            savingsTotalInterestEl.textContent = formatter.format(totalInterest);
+            savingsGoalTotalEl.textContent = formatter.format(goalAmount);
+
+            updateSavingsChart(years, monthlySavings, annualInterestRate, settings);
+        }
+        
+        function updateSavingsChart(years, monthlySavings, rate, settings) {
+            if (savingsChart) savingsChart.destroy();
+            const labels = [];
+            const principalData = [];
+            const interestData = [];
+            
+            const totalMonths = years * 12;
+            const monthlyRate = rate / 12;
+            let balance = 0;
+
+            for (let m = 1; m <= totalMonths; m++) {
+                 balance = balance * (1 + monthlyRate) + monthlySavings;
+                if (m % 12 === 0 || m === totalMonths) {
+                    const year = Math.ceil(m / 12);
+                    labels.push(`Año ${year}`);
+                    const yearPrincipal = monthlySavings * m;
+                    const yearInterest = balance - yearPrincipal;
+                    principalData.push(yearPrincipal);
+                    interestData.push(yearInterest);
+                }
+            }
+
+            savingsChart = new Chart(savingsChartCtx, {
+                type: 'bar',
+                data: { 
+                    labels, 
+                    datasets: [
+                        { label: 'Aportes Totales', data: principalData, backgroundColor: '#818cf8' },
+                        { label: 'Intereses Ganados', data: interestData, backgroundColor: '#c7d2fe' }
+                    ] 
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { 
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true, title: { display: true, text: `Valor (${currentCurrency})` } } 
+                    },
+                    plugins: { 
+                        tooltip: { 
+                            callbacks: { 
+                                label: context => `${context.dataset.label || ''}: ${new Intl.NumberFormat(settings.locale, { style: 'currency', currency: currentCurrency, maximumFractionDigits:0 }).format(context.parsed.y)}` 
+                            } 
+                        } 
+                    }
+                }
+            });
+        }
+        
         window.onload = () => {
-            [initialSavingsInput, monthlyPensionInput].forEach(input => formatNumber(input));
-            calculateAndDisplay();
+            setupEventListeners();
+            updateCurrency('CLP');
         };
     </script>
-</body>
-</html>
-
 </body>
 </html>
