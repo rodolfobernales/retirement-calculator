@@ -23,61 +23,91 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             transition: all 0.3s ease;
         }
+        .dark .card {
+             background-color: #1f2937; /* gray-800 */
+             border: 1px solid #374151; /* gray-700 */
+        }
         .input-group { margin-bottom: 1.5rem; }
         .input-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #4b5563; }
+        .dark .input-label { color: #d1d5db; /* gray-300 */ }
         .input-field {
             width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #d1d5db;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
+        .dark .input-field {
+            background-color: #374151; /* gray-700 */
+            border-color: #4b5563; /* gray-600 */
+            color: #f3f4f6; /* gray-100 */
+        }
         .input-field:focus {
             outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+        .dark .input-field:focus {
+             border-color: #818cf8; /* indigo-400 */
+             box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.3);
         }
         .slider {
             -webkit-appearance: none; width: 100%; height: 8px; border-radius: 5px; background: #d1d5db;
             outline: none; opacity: 0.7; transition: opacity .2s;
         }
+        .dark .slider { background: #4b5563; }
         .slider:hover { opacity: 1; }
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none; width: 20px; height: 20px;
             border-radius: 50%; background: #6366f1; cursor: pointer;
         }
+        .dark .slider::-webkit-slider-thumb { background: #818cf8; }
         .slider::-moz-range-thumb {
             width: 20px; height: 20px; border-radius: 50%; background: #6366f1; cursor: pointer;
         }
+        .dark .slider::-moz-range-thumb { background: #818cf8; }
         .result-value { font-size: 2.25rem; font-weight: 700; color: #6366f1; }
+        .dark .result-value { color: #818cf8; }
         .tab-button, .lang-button {
             padding: 0.5rem 1rem; border-radius: 9999px; font-weight: 600;
             cursor: pointer; transition: all 0.3s ease;
         }
         .tab-button.active { background-color: #4f46e5; color: white; }
         .tab-button.inactive { background-color: #e0e7ff; color: #4338ca; }
+        .dark .tab-button.active { background-color: #6366f1; }
+        .dark .tab-button.inactive { background-color: #3730a3; color: #c7d2fe; }
         .lang-button.active { background-color: #059669; color: white; }
         .lang-button.inactive { background-color: #a7f3d0; color: #047857; }
+        .dark .lang-button.active { background-color: #10b981; }
+        .dark .lang-button.inactive { background-color: #064e3b; color: #a7f3d0; }
         .currency-button {
             padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 500; font-size: 0.875rem;
             cursor: pointer; transition: all 0.3s ease;
         }
         .currency-button.active { background-color: #10b981; color: white; }
         .currency-button.inactive { background-color: #d1fae5; color: #047857; }
+        .dark .currency-button.active { background-color: #10b981; }
+        .dark .currency-button.inactive { background-color: #065f46; color: #a7f3d0; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-300">
 
     <main class="container mx-auto px-4 py-8 md:py-12">
-        <header class="text-center mb-10 md:mb-16">
-            <div class="absolute top-4 right-4 flex space-x-2 bg-green-100 p-1 rounded-full">
-                <button id="es-btn" data-lang="es" class="lang-button active text-sm">ES</button>
-                <button id="en-btn" data-lang="en" class="lang-button inactive text-sm">EN</button>
+        <header class="text-center mb-10 md:mb-16 relative">
+             <div id="header-controls" class="absolute top-0 right-4 flex items-center space-x-2">
+                <div class="flex space-x-2 bg-green-100 dark:bg-gray-800 p-1 rounded-full">
+                    <button id="es-btn" data-lang="es" class="lang-button active text-sm">ES</button>
+                    <button id="en-btn" data-lang="en" class="lang-button inactive text-sm">EN</button>
+                </div>
+                <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                    <svg id="theme-toggle-dark-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 011.414 0l.707-.707a1 1 0 11-1.414-1.414l-.707.707a1 1 0 010 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
             </div>
-            <h1 data-translate="mainTitle" class="text-4xl md:text-5xl font-bold text-gray-800">Planificador Financiero</h1>
-            <p data-translate="mainSubtitle" class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Calcula tu plan de jubilación o define una meta de ahorro.</p>
+            <h1 data-translate="mainTitle" class="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100">Planificador Financiero</h1>
+            <p data-translate="mainSubtitle" class="mt-4 text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">Calcula tu plan de jubilación o define una meta de ahorro.</p>
             
-            <div class="mt-6 flex justify-center space-x-2 bg-indigo-100 p-1 rounded-full w-max mx-auto">
+            <div class="mt-6 flex justify-center space-x-2 bg-indigo-100 dark:bg-gray-800 p-1 rounded-full w-max mx-auto">
                 <button id="retirement-tab" data-translate="retirementTab" class="tab-button active">Plan de Jubilación</button>
                 <button id="savings-tab" data-translate="savingsTab" class="tab-button inactive">Meta de Ahorro</button>
             </div>
             
-            <div id="currency-selector" class="mt-4 flex justify-center space-x-2 bg-green-100 p-1 rounded-full w-max mx-auto">
+            <div id="currency-selector" class="mt-4 flex justify-center space-x-2 bg-green-100 dark:bg-gray-800 p-1 rounded-full w-max mx-auto">
                 <button data-currency="CLP" class="currency-button active">CLP 🇨🇱</button>
                 <button data-currency="USD" class="currency-button inactive">USD 🇺🇸</button>
                 <button data-currency="MXN" class="currency-button inactive">MXN 🇲🇽</button>
@@ -93,28 +123,28 @@
                             <div class="input-group">
                                 <div class="flex justify-between items-center">
                                     <label for="currentAge" data-translate="currentAge" class="input-label">Edad Actual</label>
-                                    <span id="currentAgeValue" class="font-semibold text-indigo-600">30</span>
+                                    <span id="currentAgeValue" class="font-semibold text-indigo-600 dark:text-indigo-400">30</span>
                                 </div>
                                 <input type="range" id="currentAge" class="slider" min="18" max="70" value="30">
                             </div>
                             <div class="input-group">
                                 <div class="flex justify-between items-center">
                                     <label for="retirementAge" data-translate="retirementAge" class="input-label">Edad de Jubilación</label>
-                                    <span id="retirementAgeValue" class="font-semibold text-indigo-600">65</span>
+                                    <span id="retirementAgeValue" class="font-semibold text-indigo-600 dark:text-indigo-400">65</span>
                                 </div>
                                 <input type="range" id="retirementAge" class="slider" min="50" max="84" value="65">
                             </div>
                             <div class="input-group">
                                 <div class="flex justify-between items-center">
                                     <label for="interestRate" data-translate="interestRate" class="input-label">Tasa de Interés Anual (%)</label>
-                                    <span id="interestRateValue" class="font-semibold text-indigo-600">10.0</span>
+                                    <span id="interestRateValue" class="font-semibold text-indigo-600 dark:text-indigo-400">10.0</span>
                                 </div>
                                 <input type="range" id="interestRate" class="slider" min="1" max="15" step="0.1" value="10">
                             </div>
                             <div class="input-group">
                                 <div class="flex justify-between items-center">
                                     <label for="inflationRate" data-translate="inflationRate" class="input-label">Inflación Anual (%)</label>
-                                    <span id="inflationRateValue" class="font-semibold text-indigo-600">4.0</span>
+                                    <span id="inflationRateValue" class="font-semibold text-indigo-600 dark:text-indigo-400">4.0</span>
                                 </div>
                                 <input type="range" id="inflationRate" class="slider" min="0" max="10" step="0.1" value="4">
                             </div>
@@ -125,7 +155,7 @@
                             <div class="input-group">
                                 <label for="monthlyPensionInput" class="input-label"><span data-translate="monthlyPension">Pensión Mensual Deseada</span> (<span class="currency-label">CLP</span> <span data-translate="today">de hoy</span>)</label>
                                 <input type="text" id="monthlyPensionInput" inputmode="numeric" class="input-field" value="1.000.000">
-                                <p id="pensionFutureValueNote" class="text-xs text-gray-500 mt-2 text-left h-4"></p>
+                                <p id="pensionFutureValueNote" class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-left h-4"></p>
                             </div>
                             <p id="retirement-error-message" class="text-red-500 text-sm h-4"></p>
                         </div>
@@ -134,12 +164,12 @@
                         <div class="card p-6 md:p-8">
                             <h2 data-translate="estimatedSavingsPlan" class="text-2xl font-semibold mb-6">Tu Plan de Ahorro Estimado</h2>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 text-center">
-                                <div class="bg-indigo-50 p-6 rounded-lg">
-                                    <h3 data-translate="monthlySavingRequired" class="text-lg font-medium text-gray-600 mb-2">Ahorro Mensual Requerido</h3>
+                                <div class="bg-indigo-50 dark:bg-gray-700 p-6 rounded-lg">
+                                    <h3 data-translate="monthlySavingRequired" class="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2">Ahorro Mensual Requerido</h3>
                                     <p id="monthlySaving" class="result-value">$0</p>
                                 </div>
-                                <div class="bg-indigo-50 p-6 rounded-lg">
-                                    <h3 data-translate="annualSavingRequired" class="text-lg font-medium text-gray-600 mb-2">Ahorro Anual Requerido</h3>
+                                <div class="bg-indigo-50 dark:bg-gray-700 p-6 rounded-lg">
+                                    <h3 data-translate="annualSavingRequired" class="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2">Ahorro Anual Requerido</h3>
                                     <p id="annualSaving" class="result-value">$0</p>
                                 </div>
                             </div>
@@ -149,7 +179,7 @@
                                     <canvas id="retirementChart"></canvas>
                                 </div>
                             </div>
-                            <div id="retirement-summary" class="mt-8 text-center bg-gray-100 p-4 rounded-lg"></div>
+                            <div id="retirement-summary" class="mt-8 text-center bg-gray-100 dark:bg-gray-700/50 p-4 rounded-lg"></div>
                         </div>
                     </div>
                 </div>
@@ -170,14 +200,14 @@
                              <div class="input-group">
                                 <div class="flex justify-between items-center">
                                     <label for="goalInterestRate" data-translate="goalInterestRate" class="input-label">Tasa de Interés Anual (%)</label>
-                                    <span id="goalInterestRateValue" class="font-semibold text-indigo-600">5.0</span>
+                                    <span id="goalInterestRateValue" class="font-semibold text-indigo-600 dark:text-indigo-400">5.0</span>
                                 </div>
                                 <input type="range" id="goalInterestRate" class="slider" min="0" max="15" step="0.1" value="5">
                             </div>
                             <div class="input-group">
                                 <div class="flex justify-between items-center">
                                     <label for="goalYears" data-translate="goalYears" class="input-label">¿En cuántos años?</label>
-                                    <span id="goalYearsValue" class="font-semibold text-indigo-600">2</span>
+                                    <span id="goalYearsValue" class="font-semibold text-indigo-600 dark:text-indigo-400">2</span>
                                 </div>
                                 <input type="range" id="goalYears" class="slider" min="1" max="20" value="2">
                             </div>
@@ -187,9 +217,9 @@
                     <div class="lg:col-span-3">
                          <div class="card p-6 md:p-8 text-center">
                             <h2 id="savings-result-title" data-translate="yourSavingsPlan" class="text-2xl font-semibold mb-6">Tu Plan de Ahorro</h2>
-                             <div class="bg-indigo-50 p-8 rounded-lg">
-                                <h3 data-translate="monthlySavingRequired" class="text-xl font-medium text-gray-600 mb-2">Ahorro Mensual Necesario</h3>
-                                <p id="monthlySavingsGoal" class="text-5xl font-bold text-indigo-600">$0</p>
+                             <div class="bg-indigo-50 dark:bg-gray-700 p-8 rounded-lg">
+                                <h3 data-translate="monthlySavingRequired" class="text-xl font-medium text-gray-600 dark:text-gray-300 mb-2">Ahorro Mensual Necesario</h3>
+                                <p id="monthlySavingsGoal" class="text-5xl font-bold text-indigo-600 dark:text-indigo-400">$0</p>
                             </div>
                              <div class="mt-8">
                                 <h3 data-translate="savingsProgress" class="text-xl font-semibold mb-4 text-center">Progreso de Ahorro</h3>
@@ -197,7 +227,7 @@
                                     <canvas id="savingsChart"></canvas>
                                 </div>
                             </div>
-                             <div id="savings-summary" class="mt-8 text-center bg-gray-100 p-4 rounded-lg"></div>
+                             <div id="savings-summary" class="mt-8 text-center bg-gray-100 dark:bg-gray-700/50 p-4 rounded-lg"></div>
                         </div>
                     </div>
                 </div>
@@ -206,16 +236,53 @@
     </main>
 
     <footer class="w-full py-6">
-        <div class="container mx-auto text-center text-gray-600">
+        <div class="container mx-auto text-center text-gray-600 dark:text-gray-400">
             <p><span data-translate="developedBy">Desarrollado por</span> 
                 <a href="https://www.linkedin.com/in/rodolfobernales/" target="_blank" rel="noopener noreferrer" class="font-semibold text-indigo-600 hover:underline">
                     Rodolfo Bernales
                 </a>
             </p>
+            <p class="text-sm mt-2"><span data-translate="visitorCount">Visitas</span>: <span id="visitor-count-number"></span></p>
         </div>
     </footer>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Initialization ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-financial-planner';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- Visitor Counter ---
+        async function updateVisitorCount() {
+            const counterRef = doc(db, "artifacts", appId, "public/data", "counters", "visitor_counter");
+            const visitorCountNumberEl = document.getElementById('visitor-count-number');
+            try {
+                const newCount = await runTransaction(db, async (transaction) => {
+                    const counterDoc = await transaction.get(counterRef);
+                    if (!counterDoc.exists()) {
+                        transaction.set(counterRef, { count: 1 });
+                        return 1;
+                    }
+                    const count = counterDoc.data().count + 1;
+                    transaction.update(counterRef, { count });
+                    return count;
+                });
+                if (visitorCountNumberEl) {
+                    visitorCountNumberEl.textContent = newCount.toLocaleString();
+                }
+            } catch (e) {
+                console.error("Visitor count transaction failed: ", e);
+                 if (visitorCountNumberEl) {
+                    visitorCountNumberEl.textContent = 'N/A';
+                }
+            }
+        }
+
+
         // --- Constants and Global Vars ---
         const LIFE_EXPECTANCY = 85;
         let retirementChart, savingsChart;
@@ -247,7 +314,7 @@
                 savingsSummary1: "Al final del plazo, habrás aportado", savingsSummary2: "y ganado",
                 savingsSummary3: "en intereses, para alcanzar tu meta de", savingsPlanFor: "Plan para",
                 developedBy: "Desarrollado por", chartTotalContributions: "Aportes Totales", chartInterestEarned: "Intereses Ganados",
-                chartYear: "Año", chartValue: "Valor", chartSavingsAccumulated: "Ahorro Acumulado"
+                chartYear: "Año", chartValue: "Valor", chartSavingsAccumulated: "Ahorro Acumulado", visitorCount: "Visitas"
             },
             en: {
                 mainTitle: "Financial Planner", mainSubtitle: "Calculate your retirement plan or set a savings goal.",
@@ -267,17 +334,20 @@
                 savingsSummary1: "At the end of the term, you will have contributed", savingsSummary2: "and earned",
                 savingsSummary3: "in interest, to reach your goal of", savingsPlanFor: "Plan for",
                 developedBy: "Developed by", chartTotalContributions: "Total Contributions", chartInterestEarned: "Interest Earned",
-                chartYear: "Year", chartValue: "Value", chartSavingsAccumulated: "Accumulated Savings"
+                chartYear: "Year", chartValue: "Value", chartSavingsAccumulated: "Accumulated Savings", visitorCount: "Visitors"
             }
         };
 
         // --- DOM Elements ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
         const retirementTab = document.getElementById('retirement-tab');
         const savingsTab = document.getElementById('savings-tab');
         const retirementCalculatorDiv = document.getElementById('retirement-calculator');
         const savingsCalculatorDiv = document.getElementById('savings-calculator');
         const currencySelectorDiv = document.getElementById('currency-selector');
-        const langSelectorDiv = document.querySelector('.absolute.top-4.right-4');
+        const headerControlsDiv = document.getElementById('header-controls');
         
         // Retirement Elements
         const currentAgeInput = document.getElementById('currentAge');
@@ -293,12 +363,9 @@
         const pensionFutureValueNoteEl = document.getElementById('pensionFutureValueNote');
         const monthlySavingEl = document.getElementById('monthlySaving');
         const annualSavingEl = document.getElementById('annualSaving');
-        const totalFundEl = document.getElementById('totalFund');
-        const totalContributionsEl = document.getElementById('totalContributions');
-        const totalInterestEl = document.getElementById('totalInterest');
+        const retirementSummaryDiv = document.getElementById('retirement-summary');
         const retirementErrorMessageEl = document.getElementById('retirement-error-message');
         const retirementChartCtx = document.getElementById('retirementChart')?.getContext('2d');
-        const retirementSummaryDiv = document.getElementById('retirement-summary');
 
         // Savings Goal Elements
         const goalNameInput = document.getElementById('goalName');
@@ -313,23 +380,29 @@
         const savingsChartCtx = document.getElementById('savingsChart')?.getContext('2d');
         const savingsSummaryDiv = document.getElementById('savings-summary');
 
+
         // --- Event Listeners ---
         function setupEventListeners() {
-            retirementTab.addEventListener('click', () => switchTab('retirement'));
-            savingsTab.addEventListener('click', () => switchTab('savings'));
+            if (retirementTab) retirementTab.addEventListener('click', () => switchTab('retirement'));
+            if (savingsTab) savingsTab.addEventListener('click', () => switchTab('savings'));
             
-            currencySelectorDiv.addEventListener('click', (e) => {
+            if (currencySelectorDiv) currencySelectorDiv.addEventListener('click', (e) => {
                 if(e.target.matches('.currency-button')) {
                     const newCurrency = e.target.dataset.currency;
                     if(newCurrency !== currentCurrency) updateCurrency(newCurrency);
                 }
             });
 
-            langSelectorDiv.addEventListener('click', (e) => {
-                 if(e.target.matches('.lang-button')) {
-                    const newLang = e.target.dataset.lang;
+            if (headerControlsDiv) headerControlsDiv.addEventListener('click', (e) => {
+                 const langBtn = e.target.closest('.lang-button');
+                 if(langBtn) {
+                    const newLang = langBtn.dataset.lang;
                     if(newLang !== currentLang) updateLanguage(newLang);
-                }
+                 }
+                 const themeBtn = e.target.closest('#theme-toggle');
+                 if (themeBtn) {
+                    toggleTheme();
+                 }
             });
 
             [currentAgeInput, retirementAgeInput, interestRateInput, inflationRateInput].forEach(input => input.addEventListener('input', calculateRetirement));
@@ -345,6 +418,41 @@
             });
         }
         
+        // --- Theme Handling ---
+        function toggleTheme() {
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+            calculateRetirement();
+            calculateSavingsGoal();
+        }
+
+        function setInitialTheme() {
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                themeToggleLightIcon.classList.remove('hidden');
+                document.documentElement.classList.add('dark');
+            } else {
+                themeToggleDarkIcon.classList.remove('hidden');
+                 document.documentElement.classList.remove('dark');
+            }
+        }
+
         // --- Language Handling ---
         function updateLanguage(lang) {
             currentLang = lang;
@@ -466,8 +574,8 @@
             const totalInterest = totalFundNeeded - totalContributions;
 
             retirementSummaryDiv.innerHTML = `
-                <p class="text-gray-700">${T.retirementSummary1} <span class="font-bold">${LIFE_EXPECTANCY} ${T.chartYear.toLowerCase()}s</span>, ${T.retirementSummary2} <span class="font-bold">${formatter.format(totalFundNeeded)}</span>.</p>
-                <p class="text-gray-700 mt-2">${T.retirementSummary3} <span class="font-bold">${formatter.format(totalContributions)}</span> ${T.retirementSummary4} <span class="font-bold">${formatter.format(totalInterest)}</span> ${T.retirementSummary5}.</p>
+                <p class="text-gray-700 dark:text-gray-300">${T.retirementSummary1} <span class="font-bold">${LIFE_EXPECTANCY} ${T.chartYear.toLowerCase()}s</span>, ${T.retirementSummary2} <span class="font-bold">${formatter.format(totalFundNeeded)}</span>.</p>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">${T.retirementSummary3} <span class="font-bold">${formatter.format(totalContributions)}</span> ${T.retirementSummary4} <span class="font-bold">${formatter.format(totalInterest)}</span> ${T.retirementSummary5}.</p>
             `;
             pensionFutureValueNoteEl.textContent = `${T.pensionFutureNote} ${formatter.format(monthlyPensionFutureValue)} ${T.pensionFutureNote2}`;
             
@@ -540,7 +648,7 @@
             const totalInterest = goalAmount - totalContributions;
 
             savingsSummaryDiv.innerHTML = `
-                <p class="text-gray-700">${T.savingsSummary1} <span class="font-bold">${formatter.format(totalContributions)}</span> ${T.savingsSummary2} <span class="font-bold">${formatter.format(totalInterest)}</span> ${T.savingsSummary3} <span class="font-bold">${formatter.format(goalAmount)}</span>.</p>
+                <p class="text-gray-700 dark:text-gray-300">${T.savingsSummary1} <span class="font-bold">${formatter.format(totalContributions)}</span> ${T.savingsSummary2} <span class="font-bold">${formatter.format(totalInterest)}</span> ${T.savingsSummary3} <span class="font-bold">${formatter.format(goalAmount)}</span>.</p>
             `;
 
             updateSavingsChart(years, monthlySavings, annualInterestRate, settings);
@@ -581,9 +689,11 @@
         }
         
         window.onload = () => {
+            setInitialTheme();
             setupEventListeners();
             updateCurrency('CLP');
             updateLanguage('es');
+            updateVisitorCount();
         };
     </script>
 </body>
