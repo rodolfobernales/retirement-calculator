@@ -238,51 +238,12 @@
     <footer class="w-full py-6">
         <div class="container mx-auto text-center text-gray-600 dark:text-gray-400">
             <p><span data-translate="developedBy">Desarrollado por</span> 
-                <a href="https://www.linkedin.com/in/rodolfobernales/" target="_blank" rel="noopener noreferrer" class="font-semibold text-indigo-600 hover:underline">
-                    Rodolfo Bernales
-                </a>
+                <span class="font-semibold text-indigo-600">Rolox</span>
             </p>
-            <p class="text-sm mt-2"><span data-translate="visitorCount">Visitas</span>: <span id="visitor-count-number"></span></p>
         </div>
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // --- Firebase Initialization ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-financial-planner';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // --- Visitor Counter ---
-        async function updateVisitorCount() {
-            const counterRef = doc(db, "artifacts", appId, "public/data", "counters", "visitor_counter");
-            const visitorCountNumberEl = document.getElementById('visitor-count-number');
-            try {
-                const newCount = await runTransaction(db, async (transaction) => {
-                    const counterDoc = await transaction.get(counterRef);
-                    if (!counterDoc.exists()) {
-                        transaction.set(counterRef, { count: 1 });
-                        return 1;
-                    }
-                    const count = counterDoc.data().count + 1;
-                    transaction.update(counterRef, { count });
-                    return count;
-                });
-                if (visitorCountNumberEl) {
-                    visitorCountNumberEl.textContent = newCount.toLocaleString();
-                }
-            } catch (e) {
-                console.error("Visitor count transaction failed: ", e);
-                 if (visitorCountNumberEl) {
-                    visitorCountNumberEl.textContent = 'N/A';
-                }
-            }
-        }
-
-
+    <script>
         // --- Constants and Global Vars ---
         const LIFE_EXPECTANCY = 85;
         let retirementChart, savingsChart;
@@ -693,7 +654,6 @@
             setupEventListeners();
             updateCurrency('CLP');
             updateLanguage('es');
-            updateVisitorCount();
         };
     </script>
 </body>
