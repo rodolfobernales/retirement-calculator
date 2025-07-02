@@ -275,7 +275,7 @@
                 savingsSummary1: "Al final del plazo, habrás aportado", savingsSummary2: "y ganado",
                 savingsSummary3: "en intereses, para alcanzar tu meta de", savingsPlanFor: "Plan para",
                 developedBy: "Desarrollado por", chartTotalContributions: "Aportes Totales", chartInterestEarned: "Intereses Ganados",
-                chartYear: "Año", chartValue: "Valor", chartSavingsAccumulated: "Ahorro Acumulado", visitorCount: "Visitas"
+                chartYear: "Año", chartValue: "Valor", chartSavingsAccumulated: "Ahorro Acumulado"
             },
             en: {
                 mainTitle: "Financial Planner", mainSubtitle: "Calculate your retirement plan or set a savings goal.",
@@ -295,66 +295,78 @@
                 savingsSummary1: "At the end of the term, you will have contributed", savingsSummary2: "and earned",
                 savingsSummary3: "in interest, to reach your goal of", savingsPlanFor: "Plan for",
                 developedBy: "Developed by", chartTotalContributions: "Total Contributions", chartInterestEarned: "Interest Earned",
-                chartYear: "Year", chartValue: "Value", chartSavingsAccumulated: "Accumulated Savings", visitorCount: "Visitors"
+                chartYear: "Year", chartValue: "Value", chartSavingsAccumulated: "Accumulated Savings"
             }
         };
 
-        // --- DOM Elements ---
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-        const retirementTab = document.getElementById('retirement-tab');
-        const savingsTab = document.getElementById('savings-tab');
-        const retirementCalculatorDiv = document.getElementById('retirement-calculator');
-        const savingsCalculatorDiv = document.getElementById('savings-calculator');
-        const currencySelectorDiv = document.getElementById('currency-selector');
-        const headerControlsDiv = document.getElementById('header-controls');
-        
-        // Retirement Elements
-        const currentAgeInput = document.getElementById('currentAge');
-        const retirementAgeInput = document.getElementById('retirementAge');
-        const interestRateInput = document.getElementById('interestRate');
-        const inflationRateInput = document.getElementById('inflationRate');
-        const initialSavingsInput = document.getElementById('initialSavings');
-        const monthlyPensionInput = document.getElementById('monthlyPensionInput');
-        const currentAgeValue = document.getElementById('currentAgeValue');
-        const retirementAgeValue = document.getElementById('retirementAgeValue');
-        const interestRateValue = document.getElementById('interestRateValue');
-        const inflationRateValue = document.getElementById('inflationRateValue');
-        const pensionFutureValueNoteEl = document.getElementById('pensionFutureValueNote');
-        const monthlySavingEl = document.getElementById('monthlySaving');
-        const annualSavingEl = document.getElementById('annualSaving');
-        const retirementSummaryDiv = document.getElementById('retirement-summary');
-        const retirementErrorMessageEl = document.getElementById('retirement-error-message');
-        const retirementChartCtx = document.getElementById('retirementChart')?.getContext('2d');
+        // --- DOM Elements (Declare with let) ---
+        let themeToggleBtn, themeToggleDarkIcon, themeToggleLightIcon, retirementTab, savingsTab,
+            retirementCalculatorDiv, savingsCalculatorDiv, currencySelectorDiv, headerControlsDiv,
+            currentAgeInput, retirementAgeInput, interestRateInput, inflationRateInput,
+            initialSavingsInput, monthlyPensionInput, currentAgeValue, retirementAgeValue,
+            interestRateValue, inflationRateValue, pensionFutureValueNoteEl, monthlySavingEl,
+            annualSavingEl, retirementSummaryDiv, retirementErrorMessageEl, retirementChartCtx,
+            goalNameInput, goalAmountInput, goalYearsInput, goalInterestRateInput,
+            goalInterestRateValue, goalYearsValue, monthlySavingsGoalEl, savingsResultTitleEl,
+            savingsErrorMessageEl, savingsChartCtx, savingsSummaryDiv;
 
-        // Savings Goal Elements
-        const goalNameInput = document.getElementById('goalName');
-        const goalAmountInput = document.getElementById('goalAmount');
-        const goalYearsInput = document.getElementById('goalYears');
-        const goalInterestRateInput = document.getElementById('goalInterestRate');
-        const goalInterestRateValue = document.getElementById('goalInterestRateValue');
-        const goalYearsValue = document.getElementById('goalYearsValue');
-        const monthlySavingsGoalEl = document.getElementById('monthlySavingsGoal');
-        const savingsResultTitleEl = document.getElementById('savings-result-title');
-        const savingsErrorMessageEl = document.getElementById('savings-error-message');
-        const savingsChartCtx = document.getElementById('savingsChart')?.getContext('2d');
-        const savingsSummaryDiv = document.getElementById('savings-summary');
+        // --- Assign DOM Elements after DOM is loaded ---
+        function assignDOMElements() {
+            themeToggleBtn = document.getElementById('theme-toggle');
+            themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+            themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+            retirementTab = document.getElementById('retirement-tab');
+            savingsTab = document.getElementById('savings-tab');
+            retirementCalculatorDiv = document.getElementById('retirement-calculator');
+            savingsCalculatorDiv = document.getElementById('savings-calculator');
+            currencySelectorDiv = document.getElementById('currency-selector');
+            headerControlsDiv = document.getElementById('header-controls');
+            
+            // Retirement Elements
+            currentAgeInput = document.getElementById('currentAge');
+            retirementAgeInput = document.getElementById('retirementAge');
+            interestRateInput = document.getElementById('interestRate');
+            inflationRateInput = document.getElementById('inflationRate');
+            initialSavingsInput = document.getElementById('initialSavings');
+            monthlyPensionInput = document.getElementById('monthlyPensionInput');
+            currentAgeValue = document.getElementById('currentAgeValue');
+            retirementAgeValue = document.getElementById('retirementAgeValue');
+            interestRateValue = document.getElementById('interestRateValue');
+            inflationRateValue = document.getElementById('inflationRateValue');
+            pensionFutureValueNoteEl = document.getElementById('pensionFutureValueNote');
+            monthlySavingEl = document.getElementById('monthlySaving');
+            annualSavingEl = document.getElementById('annualSaving');
+            retirementSummaryDiv = document.getElementById('retirement-summary');
+            retirementErrorMessageEl = document.getElementById('retirement-error-message');
+            retirementChartCtx = document.getElementById('retirementChart')?.getContext('2d');
 
+            // Savings Goal Elements
+            goalNameInput = document.getElementById('goalName');
+            goalAmountInput = document.getElementById('goalAmount');
+            goalYearsInput = document.getElementById('goalYears');
+            goalInterestRateInput = document.getElementById('goalInterestRate');
+            goalInterestRateValue = document.getElementById('goalInterestRateValue');
+            goalYearsValue = document.getElementById('goalYearsValue');
+            monthlySavingsGoalEl = document.getElementById('monthlySavingsGoal');
+            savingsResultTitleEl = document.getElementById('savings-result-title');
+            savingsErrorMessageEl = document.getElementById('savings-error-message');
+            savingsChartCtx = document.getElementById('savingsChart')?.getContext('2d');
+            savingsSummaryDiv = document.getElementById('savings-summary');
+        }
 
         // --- Event Listeners ---
         function setupEventListeners() {
-            if (retirementTab) retirementTab.addEventListener('click', () => switchTab('retirement'));
-            if (savingsTab) savingsTab.addEventListener('click', () => switchTab('savings'));
+            retirementTab.addEventListener('click', () => switchTab('retirement'));
+            savingsTab.addEventListener('click', () => switchTab('savings'));
             
-            if (currencySelectorDiv) currencySelectorDiv.addEventListener('click', (e) => {
+            currencySelectorDiv.addEventListener('click', (e) => {
                 if(e.target.matches('.currency-button')) {
                     const newCurrency = e.target.dataset.currency;
                     if(newCurrency !== currentCurrency) updateCurrency(newCurrency);
                 }
             });
 
-            if (headerControlsDiv) headerControlsDiv.addEventListener('click', (e) => {
+            headerControlsDiv.addEventListener('click', (e) => {
                  const langBtn = e.target.closest('.lang-button');
                  if(langBtn) {
                     const newLang = langBtn.dataset.lang;
@@ -650,6 +662,7 @@
         }
         
         window.onload = () => {
+            assignDOMElements();
             setInitialTheme();
             setupEventListeners();
             updateCurrency('CLP');
